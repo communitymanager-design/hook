@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hook · Super Admin Panel</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green-dark: #0B3828;
+    --green-mid:  #1A5C3C;
+    --lime:       #BDDE48;
+    --surface:    #FFFFFF;
+    --bg:         #F5F4EF;
+    --border:     rgba(0,0,0,0.08);
+    --text:       #1A1A1A;
+    --text-2:     #5F5E5A;
+    --text-3:     #AEADA9;
+    --red:        #D93636;
+    --red-bg:     #FFF0F0;
+    --blue:       #185FA5;
+    --blue-bg:    #EEF4FB;
+    --orange:     #C07A00;
+    --orange-bg:  #FFF8EC;
+    --radius:     10px;
+    --shadow:     0 2px 12px rgba(0,0,0,0.08);
+  }
+
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  #login-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--green-dark);
+  }
+
+  .login-card {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 40px 36px;
+    width: 100%;
+    max-width: 380px;
+    box-shadow: var(--shadow);
+  }
+
+  .login-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+  .login-logo-icon {
+    width: 38px; height: 38px;
+    background: var(--green-dark);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .login-logo-icon svg { width: 22px; height: 22px; }
+  .login-title { font-size: 20px; font-weight: 700; color: var(--green-dark); }
+  .login-sub { font-size: 12px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.5px; }
+
+  .form-label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; color: var(--text); }
+  .form-input {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    font-size: 14px;
+    color: var(--text);
+    background: var(--surface);
+    outline: none;
+    margin-bottom: 14px;
+    transition: border-color 0.15s;
+  }
+  .form-input:focus { border-color: var(--green-dark); }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 10px 18px; border-radius: var(--radius);
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--surface); color: var(--text);
+    transition: opacity 0.13s, background 0.13s;
+    text-decoration: none;
+  }
+  .btn:hover { opacity: 0.85; }
+  .btn-primary { background: var(--green-dark); color: #fff; border-color: var(--green-dark); width: 100%; justify-content: center; }
+  .btn-sm { padding: 6px 12px; font-size: 12px; }
+  .btn-danger { background: var(--red-bg); color: var(--red); border-color: transparent; }
+
+  #error-msg { color: var(--red); font-size: 12px; margin-bottom: 10px; display: none; }
+
+  #app-screen { display: none; }
+
+  .topbar {
+    background: var(--green-dark);
+    padding: 0 28px;
+    height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .topbar-brand { display: flex; align-items: center; gap: 10px; }
+  .topbar-brand-icon {
+    width: 32px; height: 32px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .topbar-title { font-size: 15px; font-weight: 700; color: #fff; }
+  .topbar-badge { font-size: 10px; background: var(--lime); color: var(--green-dark); padding: 2px 8px; border-radius: 12px; font-weight: 700; letter-spacing: 0.3px; }
+  .topbar-user { font-size: 12px; color: rgba(255,255,255,0.6); display: flex; align-items: center; gap: 12px; }
+  .topbar-user strong { color: #fff; }
+  .topbar-logout { font-size: 12px; color: rgba(255,255,255,0.5); cursor: pointer; text-decoration: underline; }
+  .topbar-logout:hover { color: #fff; }
+
+  .main { padding: 28px; max-width: 1100px; margin: 0 auto; }
+
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; }
+  .stat-val { font-size: 28px; font-weight: 700; line-height: 1; margin-bottom: 4px; }
+  .stat-label { font-size: 12px; color: var(--text-2); }
+
+  .section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 20px; }
+  .section-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .section-title { font-size: 14px; font-weight: 600; }
+  .section-count { font-size: 12px; color: var(--text-3); }
+
+  .search-bar {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .search-input {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
+    outline: none;
+    background: var(--bg);
+    color: var(--text);
+  }
+  .search-input:focus { border-color: var(--green-dark); background: var(--surface); }
+
+  table { width: 100%; border-collapse: collapse; }
+  thead th { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-3); padding: 12px 20px; text-align: left; border-bottom: 1px solid var(--border); }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--bg); }
+  tbody td { padding: 14px 20px; font-size: 13px; vertical-align: middle; }
+
+  .avatar {
+    width: 34px; height: 34px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700;
+    background: #E4F0E8; color: var(--green-dark);
+    flex-shrink: 0;
+  }
+  .user-info { display: flex; align-items: center; gap: 10px; }
+  .user-name { font-weight: 500; }
+  .user-email { font-size: 11px; color: var(--text-3); margin-top: 1px; }
+
+  .tag {
+    display: inline-flex; align-items: center;
+    padding: 3px 10px; border-radius: 20px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.2px;
+  }
+  .tag-super { background: #EEF4FB; color: var(--blue); }
+  .tag-admin { background: var(--orange-bg); color: var(--orange); }
+  .tag-client { background: #E4F0E8; color: var(--green-mid); }
+
+  .role-select {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 12px;
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    outline: none;
+  }
+  .role-select:focus { border-color: var(--green-dark); }
+
+  .save-btn { display: none; }
+  .role-changed .save-btn { display: inline-flex; }
+
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: var(--green-dark); color: #fff;
+    padding: 12px 20px; border-radius: 10px;
+    font-size: 13px; font-weight: 500;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    z-index: 100;
+    animation: toastIn 0.2s ease;
+    white-space: nowrap;
+  }
+  .toast.error { background: var(--red); }
+  @keyframes toastIn { from { opacity:0; transform: translateX(-50%) translateY(10px); } to { opacity:1; transform: translateX(-50%) translateY(0); } }
+
+  #loading { padding: 40px; text-align: center; color: var(--text-3); font-size: 14px; }
+
+  @media (max-width: 768px) {
+    .stats-grid { grid-template-columns: repeat(2,1fr); }
+    .main { padding: 16px; }
+    .topbar { padding: 0 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="24" height="24" rx="6" fill="#BDDE48"/>
+          <path d="M5 13L9.5 17.5L19 8" stroke="#0B3828" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div>
+        <div class="login-title">Hook</div>
+        <div class="login-sub">Super Admin Panel</div>
+      </div>
+    </div>
+    <div id="error-msg"></div>
+    <label class="form-label">Email</label>
+    <input class="form-input" type="email" id="login-email" placeholder="super@hook.cg" autocomplete="email">
+    <label class="form-label">Mot de passe</label>
+    <input class="form-input" type="password" id="login-pwd" placeholder="••••••••" autocomplete="current-password">
+    <button class="btn btn-primary" id="btn-login">Se connecter</button>
+  </div>
+</div>
+
+<div id="app-screen">
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div class="topbar-brand-icon">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2.5 10L7 14.5L15.5 6" stroke="#BDDE48" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="topbar-title">Hook</span>
+      <span class="topbar-badge">SUPER ADMIN</span>
+    </div>
+    <div class="topbar-user">
+      <span>Connecte en tant que <strong id="topbar-email"></strong></span>
+      <span class="topbar-logout" id="btn-logout">Se deconnecter</span>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="stats-grid" id="stats-grid">
+      <div class="stat-card"><div class="stat-val" id="stat-total">-</div><div class="stat-label">Utilisateurs total</div></div>
+      <div class="stat-card"><div class="stat-val" id="stat-super" style="color:var(--blue)">-</div><div class="stat-label">Super admins</div></div>
+      <div class="stat-card"><div class="stat-val" id="stat-admin" style="color:var(--orange)">-</div><div class="stat-label">Admins</div></div>
+      <div class="stat-card"><div class="stat-val" id="stat-client" style="color:var(--green-mid)">-</div><div class="stat-label">Clients</div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">Gestion des utilisateurs</div>
+        <span class="section-count" id="user-count"></span>
+      </div>
+      <div class="search-bar">
+        <input class="search-input" type="text" id="search-users" placeholder="Rechercher par nom, email...">
+      </div>
+      <div id="users-container"><div id="loading">Chargement...</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+var SUPA_URL = 'https://lzdhipjgguwpqljahogu.supabase.co';
+var SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx6ZGhpcGpnZ3V3cHFsamFob2d1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1OTU5MjIsImV4cCI6MjA5NDE3MTkyMn0.OzxZeXaKsjglFJEvhObq9f_oKogcWzKxm1MDOANcypI';
+
+var db = null;
+var currentUser = null;
+var allUsers = [];
+
+window.addEventListener('DOMContentLoaded', function() {
+  db = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+  db.auth.getSession().then(function(res) {
+    if (res.data && res.data.session) {
+      verifyAndLoad(res.data.session.user);
+    }
+  });
+
+  document.getElementById('btn-login').addEventListener('click', login);
+  document.getElementById('login-pwd').addEventListener('keydown', function(e){ if(e.key==='Enter') login(); });
+  document.getElementById('btn-logout').addEventListener('click', logout);
+  document.getElementById('search-users').addEventListener('input', function(){ renderTable(this.value); });
+});
+
+function login() {
+  var email = document.getElementById('login-email').value.trim();
+  var pwd   = document.getElementById('login-pwd').value;
+  var errEl = document.getElementById('error-msg');
+  errEl.style.display = 'none';
+  if (!email || !pwd) { showErr('Remplissez tous les champs'); return; }
+  var btn = document.getElementById('btn-login');
+  btn.textContent = 'Connexion...'; btn.disabled = true;
+
+  db.auth.signInWithPassword({ email: email, password: pwd }).then(function(res) {
+    if (res.error) { showErr(res.error.message); btn.textContent = 'Se connecter'; btn.disabled = false; return; }
+    verifyAndLoad(res.data.user);
+  });
+}
+
+function verifyAndLoad(user) {
+  db.from('users').select('role').eq('id', user.id).single().then(function(res) {
+    if (!res.data || res.data.role !== 'super_admin') {
+      db.auth.signOut();
+      showErr('Acces refuse. Vous devez etre super_admin pour acceder a ce panel.');
+      return;
+    }
+    currentUser = user;
+    document.getElementById('topbar-email').textContent = user.email;
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app-screen').style.display   = 'block';
+    loadUsers();
+  });
+}
+
+function loadUsers() {
+  document.getElementById('users-container').innerHTML = '<div id="loading">Chargement...</div>';
+  db.from('users').select('id, prenom, nom, email, role, organization_id, created_at').order('created_at', { ascending: false })
+    .then(function(res) {
+      allUsers = res.data || [];
+      updateStats();
+      renderTable('');
+    })
+    .catch(function(err) {
+      document.getElementById('users-container').innerHTML = '<div id="loading" style="color:var(--red)">Erreur: ' + err.message + '</div>';
+    });
+}
+
+function updateStats() {
+  document.getElementById('stat-total').textContent  = allUsers.length;
+  document.getElementById('stat-super').textContent  = allUsers.filter(function(u){ return u.role === 'super_admin'; }).length;
+  document.getElementById('stat-admin').textContent  = allUsers.filter(function(u){ return u.role === 'admin'; }).length;
+  document.getElementById('stat-client').textContent = allUsers.filter(function(u){ return u.role === 'client' || !u.role; }).length;
+  document.getElementById('user-count').textContent  = allUsers.length + ' utilisateurs';
+}
+
+function renderTable(search) {
+  var s = search.toLowerCase();
+  var filtered = !s ? allUsers : allUsers.filter(function(u) {
+    return ((u.prenom||'') + ' ' + (u.nom||'') + ' ' + (u.email||'')).toLowerCase().indexOf(s) !== -1;
+  });
+
+  if (!filtered.length) {
+    document.getElementById('users-container').innerHTML = '<div id="loading">Aucun utilisateur trouve.</div>';
+    return;
+  }
+
+  var rows = filtered.map(function(u) {
+    var name = ((u.prenom||'') + ' ' + (u.nom||'')).trim() || 'Sans nom';
+    var initials = name !== 'Sans nom' ? (name.split(' ').map(function(w){ return w[0]||''; }).join('').slice(0,2).toUpperCase()) : '?';
+    var role = u.role || 'client';
+    var tagCls = role === 'super_admin' ? 'tag-super' : role === 'admin' ? 'tag-admin' : 'tag-client';
+    var tagLbl = role === 'super_admin' ? 'Super Admin' : role === 'admin' ? 'Admin' : 'Client';
+    var date = u.created_at ? new Date(u.created_at).toLocaleDateString('fr-FR') : '-';
+    var isSelf = currentUser && u.id === currentUser.id;
+
+    return '<tr id="row-' + u.id + '">' +
+      '<td><div class="user-info"><div class="avatar">' + initials + '</div><div><div class="user-name">' + esc(name) + (isSelf ? ' <span style="font-size:10px;color:var(--lime);font-weight:600;background:var(--green-dark);padding:1px 6px;border-radius:8px;margin-left:4px">vous</span>' : '') + '</div><div class="user-email">' + esc(u.email||'') + '</div></div></div></td>' +
+      '<td><span class="tag ' + tagCls + '">' + tagLbl + '</span></td>' +
+      '<td>' +
+        '<select class="role-select" onchange="onRoleChange(this, \'' + u.id + '\')">' +
+          '<option value="client"'      + (role==='client'      ?' selected':'') + '>Client</option>' +
+          '<option value="admin"'       + (role==='admin'       ?' selected':'') + '>Admin</option>' +
+          '<option value="super_admin"' + (role==='super_admin' ?' selected':'') + '>Super Admin</option>' +
+        '</select>' +
+        ' <button class="btn btn-sm btn-primary save-btn" onclick="saveRole(\'' + u.id + '\')">Enregistrer</button>' +
+      '</td>' +
+      '<td style="color:var(--text-3)">' + date + '</td>' +
+      '<td>' +
+        '<button class="btn btn-sm btn-danger" onclick="deleteUser(\'' + u.id + '\', \'' + esc(u.email||name) + '\')">Supprimer</button>' +
+      '</td>' +
+    '</tr>';
+  }).join('');
+
+  document.getElementById('users-container').innerHTML =
+    '<table><thead><tr><th>Utilisateur</th><th>Role actuel</th><th>Changer le role</th><th>Inscription</th><th>Action</th></tr></thead><tbody>' + rows + '</tbody></table>';
+}
+
+function onRoleChange(select, userId) {
+  var row = document.getElementById('row-' + userId);
+  if (row) row.classList.add('role-changed');
+}
+
+function saveRole(userId) {
+  var row = document.getElementById('row-' + userId);
+  if (!row) return;
+  var select = row.querySelector('.role-select');
+  var newRole = select.value;
+  var btn = row.querySelector('.save-btn');
+  btn.textContent = 'Enregistrement...'; btn.disabled = true;
+
+  db.from('users').update({ role: newRole }).eq('id', userId).then(function(res) {
+    if (res.error) { toast(res.error.message, true); btn.textContent = 'Enregistrer'; btn.disabled = false; return; }
+    var u = allUsers.find(function(x){ return x.id === userId; });
+    if (u) u.role = newRole;
+    row.classList.remove('role-changed');
+    btn.textContent = 'Enregistrer'; btn.disabled = false;
+    updateStats();
+    toast('Role mis a jour');
+    var tagCls = newRole === 'super_admin' ? 'tag-super' : newRole === 'admin' ? 'tag-admin' : 'tag-client';
+    var tagLbl = newRole === 'super_admin' ? 'Super Admin' : newRole === 'admin' ? 'Admin' : 'Client';
+    var tagEl = row.querySelector('.tag');
+    if (tagEl) { tagEl.className = 'tag ' + tagCls; tagEl.textContent = tagLbl; }
+  });
+}
+
+function logout() {
+  db.auth.signOut().then(function() {
+    currentUser = null;
+    allUsers = [];
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('app-screen').style.display   = 'none';
+    document.getElementById('login-email').value = '';
+    document.getElementById('login-pwd').value   = '';
+  });
+}
+
+function showErr(msg) {
+  var el = document.getElementById('error-msg');
+  el.textContent = msg; el.style.display = 'block';
+}
+
+function toast(msg, isError) {
+  var t = document.createElement('div');
+  t.className = 'toast' + (isError ? ' error' : '');
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(function(){ t.remove(); }, 3000);
+}
+
+function deleteUser(userId, label) {
+  if (!confirm('Supprimer le compte "' + label + '" ? Cette action est irreversible.')) return;
+  db.auth.admin.deleteUser(userId).then(function(res) {
+    if (res.error) {
+      db.from('users').delete().eq('id', userId).then(function(r2) {
+        if (r2.error) { toast('Erreur: ' + r2.error.message, true); return; }
+        allUsers = allUsers.filter(function(u){ return u.id !== userId; });
+        updateStats();
+        renderTable(document.getElementById('search-users').value);
+        toast('Utilisateur supprime');
+      });
+    } else {
+      allUsers = allUsers.filter(function(u){ return u.id !== userId; });
+      updateStats();
+      renderTable(document.getElementById('search-users').value);
+      toast('Utilisateur supprime');
+    }
+  }).catch(function() {
+    db.from('users').delete().eq('id', userId).then(function(r2) {
+      if (r2.error) { toast('Erreur: ' + r2.error.message, true); return; }
+      allUsers = allUsers.filter(function(u){ return u.id !== userId; });
+      updateStats();
+      renderTable(document.getElementById('search-users').value);
+      toast('Utilisateur supprime');
+    });
+  });
+}
+
+function esc(str) {
+  var d = document.createElement('div');
+  d.appendChild(document.createTextNode(str));
+  return d.innerHTML;
+}
+</script>
+</body>
+</html>

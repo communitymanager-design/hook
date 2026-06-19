@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rejoindre la liste — Hook</title>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html,body{min-height:100%;background:#0B3828}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;display:flex;flex-direction:column;align-items:center}
+    .top-bar{width:100%;background:#0B3828;padding:16px 24px;display:flex;align-items:center;gap:10px}
+    .top-logo{height:36px;width:auto}
+    .hero{width:100%;background:#0B3828;padding:28px 24px 44px;text-align:center}
+    .hero-group{display:none;align-items:center;gap:6px;background:rgba(189,222,72,0.15);color:#BDDE48;font-size:13px;font-weight:600;padding:6px 14px;border-radius:99px;border:1px solid rgba(189,222,72,0.3);margin:0 auto 16px;width:fit-content}
+    .hero h1{font-size:26px;font-weight:800;color:#fff;line-height:1.2;margin-bottom:10px}
+    .hero p{font-size:15px;color:rgba(255,255,255,0.65);line-height:1.6;max-width:360px;margin:0 auto}
+    .card{background:#fff;width:100%;max-width:460px;border-radius:24px 24px 0 0;padding:36px 28px 48px;margin-top:-12px;flex:1}
+    label{display:block;font-size:13px;font-weight:600;color:#1A1A1A;margin-bottom:6px}
+    .fg{margin-bottom:18px}
+    input{width:100%;padding:13px 16px;border:1.5px solid #E5E4DF;border-radius:12px;font-size:15px;color:#1A1A1A;outline:none;transition:border-color 0.15s}
+    input:focus{border-color:#0B3828}
+    input::placeholder{color:#AEADA9}
+    .op-row{display:none;align-items:center;gap:7px;margin-top:7px;font-size:12px;font-weight:600}
+    .op-row.show{display:flex}
+    .op-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+    .btn{width:100%;padding:15px;background:#0B3828;color:#BDDE48;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;margin-top:8px;transition:opacity 0.15s}
+    .btn:hover{opacity:0.88}
+    .btn:disabled{opacity:0.4;cursor:not-allowed}
+    .err{color:#D93636;font-size:13px;margin-top:10px;padding:10px 14px;background:#FFF0F0;border-radius:8px;display:none}
+    .ok{display:none;text-align:center;padding:20px 0}
+    .ok-circle{width:72px;height:72px;background:rgba(11,56,40,0.08);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
+    .ok h2{font-size:22px;font-weight:800;color:#0B3828;margin-bottom:8px}
+    .ok p{font-size:14px;color:#5F5E5A;line-height:1.7;max-width:300px;margin:0 auto}
+    .foot{width:100%;text-align:center;padding:20px 0 32px;font-size:11px;color:rgba(255,255,255,0.3)}
+    .foot a{color:rgba(255,255,255,0.4);text-decoration:none}
+  </style>
+</head>
+<body>
+
+<div class="top-bar">
+  <img src="https://ik.imagekit.io/dkeqnflsg/HOOK%20ICON%20COLOR%20(1).png?updatedAt=1781142267098" alt="Hook" style="height:36px;width:auto"><img src="https://ik.imagekit.io/dkeqnflsg/LOGO%20TYPO%20COLOR.png?updatedAt=1781142267228" alt="Hook" style="height:22px;width:auto">
+</div>
+
+<div class="hero">
+  <div class="hero-group" id="hero-group">
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="#BDDE48" stroke-width="1.3"/><path d="M4 6l1.5 1.5L8 4" stroke="#BDDE48" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span id="hero-group-name"></span>
+  </div>
+  <h1>Rejoindre la liste</h1>
+  <p>Entrez vos informations pour recevoir les SMS de ce groupe.</p>
+</div>
+
+<div class="card">
+  <div id="fw">
+    <div class="fg"><label>Prénom</label><input type="text" id="f-prenom" placeholder="Votre prénom" autocomplete="given-name"></div>
+    <div class="fg"><label>Nom</label><input type="text" id="f-nom" placeholder="Votre nom" autocomplete="family-name"></div>
+    <div class="fg">
+      <label>Téléphone <span style="color:#D93636">*</span></label>
+      <input type="tel" id="f-tel" placeholder="+242 06 000 00 00" autocomplete="tel">
+      <div class="op-row" id="op-row">
+        <div class="op-dot" id="op-dot"></div>
+        <span id="op-lbl"></span>
+      </div>
+    </div>
+    <div class="err" id="f-err"></div>
+    <button class="btn" id="btn-join">S'inscrire</button>
+  </div>
+
+  <div class="ok" id="ok">
+    <div class="ok-circle">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M7 16l6 6 12-12" stroke="#0B3828" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <h2>Inscription réussie !</h2>
+    <p>Vous recevrez les SMS de ce groupe.</p>
+  </div>
+</div>
+
+<div class="foot">Propulsé par <a href="https://hook-by-lopango.vercel.app">Hook</a> · Plateforme marketing Congo</div>
+
+<script>
+  var SUPA_URL = 'https://lzdhipjgguwpqljahogu.supabase.co';
+  var ANON    = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx6ZGhpcGpnZ3V3cHFsamFob2d1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1OTU5MjIsImV4cCI6MjA5NDE3MTkyMn0.OzxZeXaKsjglFJEvhObq9f_oKogcWzKxm1MDOANcypI';
+
+  var p      = new URLSearchParams(window.location.search);
+  var segId  = p.get('g');
+  var orgId  = p.get('o');
+  var gName  = p.get('n');
+
+  if (gName) {
+    var sIdName = p.get('s');
+    var displayText = decodeURIComponent(gName);
+    if (sIdName) displayText += ' de ' + decodeURIComponent(sIdName);
+    document.getElementById('hero-group-name').textContent = displayText;
+    document.getElementById('hero-group').style.display = 'flex';
+  }
+
+  function detectOp(num) {
+    var n = (num || '').replace(/\s/g,'');
+    if (/^(\+24206|06)/.test(n)) return { name:'MTN Congo', color:'#FFCB00', tc:'#856900' };
+    if (/^(\+24205|05|\+24204|04)/.test(n)) return { name:'Airtel Congo', color:'#E3001B', tc:'#C00014' };
+    return null;
+  }
+
+  document.getElementById('f-tel').addEventListener('input', function() {
+    var op = detectOp(this.value);
+    var row = document.getElementById('op-row');
+    var dot = document.getElementById('op-dot');
+    var lbl = document.getElementById('op-lbl');
+    if (op) { dot.style.background=op.color; lbl.textContent=op.name; lbl.style.color=op.tc; row.classList.add('show'); }
+    else { row.classList.remove('show'); }
+  });
+
+  document.getElementById('btn-join').addEventListener('click', function() {
+    var prenom = document.getElementById('f-prenom').value.trim();
+    var nom    = document.getElementById('f-nom').value.trim();
+    var tel    = document.getElementById('f-tel').value.trim();
+    var errEl  = document.getElementById('f-err');
+    var btn    = document.getElementById('btn-join');
+
+    errEl.style.display = 'none';
+    if (!tel) { errEl.textContent='Le numéro est requis.'; errEl.style.display='block'; return; }
+
+    var op = detectOp(tel);
+    btn.textContent = 'Inscription...';
+    btn.disabled = true;
+
+    fetch(SUPA_URL + '/rest/v1/rpc/join_group_contact', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': ANON,
+        'Authorization': 'Bearer ' + ANON
+      },
+      body: JSON.stringify({
+        p_prenom: prenom || null,
+        p_nom: nom || null,
+        p_telephone: tel,
+        p_operateur: op ? op.name : '',
+        p_segment_id: segId || null,
+        p_organization_id: orgId || null
+      })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data && data.error) {
+        errEl.textContent = data.error;
+        errEl.style.display = 'block';
+        btn.textContent = "S'inscrire";
+        btn.disabled = false;
+        return;
+      }
+      document.getElementById('fw').style.display = 'none';
+      document.getElementById('ok').style.display = 'block';
+    })
+    .catch(function(e) {
+      errEl.textContent = 'Erreur réseau. Réessayez.';
+      errEl.style.display = 'block';
+      btn.textContent = "S'inscrire";
+      btn.disabled = false;
+    });
+  });
+</script>
+</body>
+</html>
