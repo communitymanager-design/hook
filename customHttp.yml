@@ -1,0 +1,49 @@
+customHeaders:
+  - pattern: '/sw.js'
+    headers:
+      - key: 'Cache-Control'
+        value: 'no-store, no-cache, must-revalidate, max-age=0'
+      - key: 'Service-Worker-Allowed'
+        value: '/'
+
+  - pattern: '/version.json'
+    headers:
+      - key: 'Cache-Control'
+        value: 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0'
+      - key: 'Pragma'
+        value: 'no-cache'
+      - key: 'Expires'
+        value: 'Thu, 01 Jan 1970 00:00:00 GMT'
+
+  - pattern: '/index.html'
+    headers:
+      - key: 'Cache-Control'
+        value: 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0'
+      - key: 'Pragma'
+        value: 'no-cache'
+      - key: 'X-Frame-Options'
+        value: 'DENY'
+
+  - pattern: '/assets/**'
+    headers:
+      - key: 'Cache-Control'
+        value: 'public, max-age=31536000, immutable'
+
+  - pattern: '/css/**'
+    headers:
+      - key: 'Cache-Control'
+        value: 'public, max-age=31536000, immutable'
+      - key: 'X-Content-Type-Options'
+        value: 'nosniff'
+
+  - pattern: '/js/**'
+    headers:
+      - key: 'Cache-Control'
+        value: 'public, max-age=31536000, immutable'
+      - key: 'X-Content-Type-Options'
+        value: 'nosniff'
+
+  - pattern: '**/*'
+    headers:
+      - key: 'X-Frame-Options'
+        value: 'DENY'
