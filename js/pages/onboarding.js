@@ -1,0 +1,1 @@
+window.PageOnboarding={render:function(){window.Helpers.renderPage('<div class="page-wrapper"><div class="page-card">'+window.Helpers.underConstruction("Onboarding")+"</div></div>")}};
