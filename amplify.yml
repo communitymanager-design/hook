@@ -1,0 +1,17 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - TS=$(date +%s)
+        - echo "{\"v\":\"$TS\"}" > version.json
+        - sed -i "s/?v=[0-9]*/?v=$TS/g" index.html
+        - echo "Version bumped to $TS"
+    build:
+      commands: []
+  artifacts:
+    baseDirectory: /
+    files:
+      - '**/*'
+  cache:
+    paths: []
