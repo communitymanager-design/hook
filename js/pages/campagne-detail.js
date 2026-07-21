@@ -37,14 +37,19 @@ window.PageCampagneDetail = {
             var livres = msgs.filter(function(m){ return m.statut==='delivered'; }).length;
             var echecs = msgs.filter(function(m){ return m.statut==='failed'; }).length;
             var enAttente = msgs.filter(function(m){ return m.statut==='pending'||m.statut==='sent'; }).length;
+            var traites = livres + echecs;
+            var envoyes = livres + echecs + enAttente;
             var taux = total > 0 ? Math.round(livres/total*100) : 0;
-            window.PageCampagneDetail._draw(camp, { total:total, livres:livres, echecs:echecs, enAttente:enAttente, taux:taux });
+            var progress = total > 0 ? Math.round(envoyes/total*100) : 0;
+            var enCours = camp.statut === 'sending' || (envoyes < total && envoyes > 0);
+            window.PageCampagneDetail._draw(camp, { total:total, livres:livres, echecs:echecs, enAttente:enAttente, traites:traites, envoyes:envoyes, taux:taux, progress:progress, enCours:enCours });
 
-            if (camp.statut === 'sending' && window.location.hash.indexOf(id) !== -1) {
+            var keepPolling = (camp.statut === 'sending' || enAttente > 0) && envoyes < total || camp.statut === 'sending';
+            if (keepPolling && window.location.hash.indexOf(id) !== -1) {
               if (self._pollTimer) clearTimeout(self._pollTimer);
               self._pollTimer = setTimeout(function() {
                 if (window.location.hash.indexOf(id) !== -1) self._load(id);
-              }, 5000);
+              }, 3000);
             }
           });
       });
@@ -109,9 +114,20 @@ window.PageCampagneDetail = {
       // ── RIGHT ──
       '<div class="cd-right">' +
 
+        // Sending progress bar (temps reel)
+        (stats.enCours || (stats.envoyes > 0 && stats.envoyes < stats.total) ?
+        '<div class="cd-card cd-progress-card">' +
+          '<div class="cd-progress-head">' +
+            '<div class="cd-progress-title"><span class="cd-progress-pulse"></span>Envoi en cours</div>' +
+            '<div class="cd-progress-count">'+stats.envoyes.toLocaleString('fr-FR')+' / '+stats.total.toLocaleString('fr-FR')+'</div>' +
+          '</div>' +
+          '<div class="cd-progress-track"><div class="cd-progress-fill" style="width:'+stats.progress+'%"></div></div>' +
+          '<div class="cd-progress-sub">'+stats.progress+'% des SMS transmis</div>' +
+        '</div>' : '') +
+
         // KPI row
         '<div class="cd-kpi-row">' +
-          this._kpi('SMS envoyés', stats.total, '#0B3828', '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 11v2h12v-2M8 2v8M5 5l3-3 3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>') +
+          this._kpi('SMS envoyés', stats.envoyes, '#0B3828', '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 11v2h12v-2M8 2v8M5 5l3-3 3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>') +
           this._kpi('Livrés', stats.livres, '#1D9E75', '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5 7.5-7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>') +
           this._kpi('Échecs', stats.echecs, '#D93636', '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>') +
           this._kpi('Taux livraison', taux+'%', taux>=70?'#1D9E75':taux>=40?'#C07A00':'#D93636', '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="9" width="3" height="5" rx="1" fill="currentColor"/><rect x="6.5" y="6" width="3" height="8" rx="1" fill="currentColor"/><rect x="11" y="3" width="3" height="11" rx="1" fill="currentColor"/></svg>') +
