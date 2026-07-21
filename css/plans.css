@@ -1,0 +1,27 @@
+.plans-wrapper {
+  padding: 32px;
+  max-width: 1240px;
+  margin: 0 auto;
+}
+.plans-header {
+  margin-bottom: 32px;
+}
+.plans-header .page-title {
+  margin-top: 4px;
+}
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+.plans-wrapper .pricing-card {
+  background: var(--color-bg-elev, #fff);
+}
+@media (max-width: 900px) {
+  .plans-grid {
+    grid-template-columns: 1fr;
+  }
+  .plans-wrapper {
+    padding: 20px 16px;
+  }
+}
