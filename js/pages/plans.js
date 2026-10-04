@@ -21,41 +21,41 @@ window.PagePlans = {
         code: 'essentiel', name: 'Essentiel', price: '55 000',
         included: '+200 SMS inclus', featured: false,
         features: [
-          {ok:true, label:'1 Sender ID validé'},
-          {ok:true, label:'Dashboard de base'},
+          {ok:true, label:'1 nom d\'expéditeur validé'},
+          {ok:true, label:'Tableau de bord simple'},
           {ok:true, label:'10 templates'},
-          {ok:true, label:'STOP automatique'},
-          {ok:true, label:'Support email (48h)'},
+          {ok:true, label:'Désabonnement STOP géré pour vous'},
+          {ok:true, label:'Réponse par email sous 48h'},
           {ok:false, label:'Automatisations'},
-          {ok:false, label:'Analytics avancé'}
+          {ok:false, label:'Statistiques avancées'}
         ]
       },
       {
         code: 'croissance', name: 'Croissance', price: '150 000',
         included: '+600 SMS inclus', featured: true,
         features: [
-          {ok:true, label:'3 Sender ID validés'},
-          {ok:true, label:'Dashboard complet'},
+          {ok:true, label:'3 noms d\'expéditeur validés'},
+          {ok:true, label:'Tableau de bord complet'},
           {ok:true, label:'10 templates FR + LN'},
           {ok:true, label:'Automatisations'},
-          {ok:true, label:'Analytics avancé'},
+          {ok:true, label:'Statistiques avancées'},
           {ok:true, label:'1 connecteur CRM (Zoho)'},
           {ok:true, label:'Accès API REST'},
-          {ok:true, label:'Support prioritaire (24h)'}
+          {ok:true, label:'Réponse prioritaire sous 24h'}
         ]
       },
       {
         code: 'performance', name: 'Performance', price: '380 000',
         included: '+1 000 SMS inclus', featured: false,
         features: [
-          {ok:true, label:'Sender ID illimités'},
-          {ok:true, label:'Dashboard complet'},
+          {ok:true, label:'Noms d\'expéditeur illimités'},
+          {ok:true, label:'Tableau de bord complet'},
           {ok:true, label:'Tous les templates'},
           {ok:true, label:'Automatisations avancées'},
-          {ok:true, label:'Analytics IA + heatmap'},
+          {ok:true, label:'Statistiques avancées et heures fortes'},
           {ok:true, label:'Tous les connecteurs CRM'},
           {ok:true, label:'Accès API complet'},
-          {ok:true, label:'Support dédié (même jour)'}
+          {ok:true, label:'Un interlocuteur dédié, réponse le jour même'}
         ]
       }
     ];
@@ -77,7 +77,7 @@ window.PagePlans = {
       + '<div class="pricing-included">'+p.included+'</div>'
       + '<div class="pricing-features">'+feats+'</div>'
       + '<div class="pricing-slider-wrap">'
-        + '<div class="pricing-slider-label">SMS supplémentaires <span class="pricing-sms-rate">100 FCFA/SMS</span></div>'
+        + '<div class="pricing-slider-label">Au-delà : <span class="pricing-sms-rate">100 FCFA par SMS</span></div>'
         + '<div class="pricing-slider-track-wrap">'
           + '<input type="range" class="pricing-slider" id="plans-slider-'+idx+'" min="0" max="10000" step="100" value="0">'
           + '<span class="pricing-slider-bubble" id="plans-bubble-'+idx+'">0</span>'
