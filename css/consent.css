@@ -1,0 +1,36 @@
+/* Bandeau et préférences cookies — Hook */
+.hc-banner{position:fixed;left:16px;right:16px;bottom:16px;z-index:10000;max-width:960px;margin:0 auto;background:var(--color-surface,#fff);color:var(--color-text-primary,#0B3828);border:1px solid var(--color-border,rgba(11,56,40,.12));border-radius:14px;box-shadow:0 10px 40px rgba(11,56,40,.18);padding:16px 18px;display:flex;align-items:center;gap:18px;font-size:14px;line-height:1.45;animation:hcUp .25s ease both}
+.hc-text{flex:1;min-width:0}
+.hc-text strong{display:block;font-size:15px;margin-bottom:2px}
+.hc-text span{color:var(--color-text-secondary,#4A6355)}
+.hc-text a{color:var(--color-blue-medium,#2E8B57);text-decoration:underline}
+.hc-actions{display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end}
+.hc-btn{font:inherit;font-size:14px;padding:9px 16px;border-radius:10px;border:1px solid rgba(11,56,40,.25);background:var(--color-surface,#fff);color:var(--color-text-primary,#0B3828);cursor:pointer;white-space:nowrap}
+.hc-btn:hover{background:var(--color-beige,#EEF0E8)}
+.hc-primary{background:var(--color-text-primary,#0B3828);border-color:var(--color-text-primary,#0B3828);color:#fff}
+.hc-primary:hover{background:var(--color-blue,#1A5C3C)}
+.hc-link{border-color:transparent;text-decoration:underline;padding-left:6px;padding-right:6px}
+.hc-link:hover{background:transparent}
+.hc-overlay{position:fixed;inset:0;z-index:10001;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px}
+.hc-sheet{background:var(--color-surface,#fff);color:var(--color-text-primary,#0B3828);border-radius:16px;max-width:480px;width:100%;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.25);font-size:14px}
+.hc-title{font-size:18px;font-weight:800;margin-bottom:14px}
+.hc-row{display:flex;align-items:center;gap:14px;padding:14px 0;border-top:1px solid var(--color-border,rgba(11,56,40,.12));cursor:default}
+label.hc-row{cursor:pointer}
+.hc-row>div{flex:1}
+.hc-row strong{display:block;margin-bottom:2px}
+.hc-row span{color:var(--color-text-secondary,#4A6355)}
+.hc-always{font-size:12px;font-weight:600;color:var(--color-green,#1D9E75)!important;white-space:nowrap}
+.hc-row input{position:absolute;opacity:0;width:0;height:0}
+.hc-switch{position:relative;width:42px;height:24px;border-radius:12px;background:#C9D3CC;flex-shrink:0;transition:background .15s}
+.hc-switch::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .15s}
+.hc-row input:checked+.hc-switch{background:var(--color-green,#1D9E75)}
+.hc-row input:checked+.hc-switch::after{transform:translateX(18px)}
+.hc-row input:focus-visible+.hc-switch{outline:2px solid var(--color-blue-medium,#2E8B57);outline-offset:2px}
+.hc-sheet .hc-actions{margin-top:16px;padding-top:14px;border-top:1px solid var(--color-border,rgba(11,56,40,.12))}
+@keyframes hcUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@media (max-width:767px){
+  .hc-banner{flex-direction:column;align-items:stretch;gap:12px;left:12px;right:12px;bottom:12px;padding:14px}
+  .hc-actions{justify-content:stretch}
+  .hc-actions .hc-btn{flex:1}
+  .hc-actions .hc-link{flex-basis:100%;order:3}
+}

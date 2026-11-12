@@ -123,7 +123,7 @@ window.PageAdminSenderId = {
         '</div>' +
       '</div>' +
       '<div class="asd-card-actions">' +
-        '<button class="admin-btn-sm asd-détail-btn" data-id="' + s.id + '">Voir la fiche</button>' +
+        '<button class="admin-btn-sm asd-detail-btn" data-id="' + s.id + '">Voir la fiche</button>' +
         actions +
       '</div>' +
     '</div>';
@@ -132,7 +132,7 @@ window.PageAdminSenderId = {
   _bindCardEvents: function() {
     var self = this;
 
-    document.querySelectorAll('.asd-détail-btn').forEach(function(btn) {
+    document.querySelectorAll('.asd-detail-btn').forEach(function(btn) {
       btn.addEventListener('click', function(e) {
         e.stopPropagation();
         self._openDétail(btn.getAttribute('data-id'));
@@ -181,7 +181,7 @@ window.PageAdminSenderId = {
           : '<div style="font-size:13px;color:var(--color-text-muted)">Aucun document joint.</div>';
 
         var pendingActions = s.statut === 'pending'
-          ? '<div class="asd-détail-actions">' +
+          ? '<div class="asd-detail-actions">' +
               '<div class="campnew-field" style="flex:1"><label>Note (optionnel)</label><textarea id="détail-note" rows="2" placeholder="Motif de refus, demande de complement..."></textarea></div>' +
               '<div style="display:flex;gap:8px;margin-top:8px">' +
                 '<button class="btn" onclick="window.Helpers.closeModal()">Fermer</button>' +
@@ -200,10 +200,10 @@ window.PageAdminSenderId = {
               '</div>' +
               '<button class="modal-close-btn" onclick="window.Helpers.closeModal()"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>' +
             '</div>' +
-            '<div class="asd-détail-grid">' +
+            '<div class="asd-detail-grid">' +
               '<div>' +
                 '<div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--color-text-muted);margin-bottom:10px">Informations</div>' +
-                row('Représentant', s.représentant_legal) +
+                row('Représentant', s.representant_legal) +
                 row('Email', s.email_contact) +
                 row('Téléphone', s.telephone) +
                 row('RCCM', s.rccm) +
