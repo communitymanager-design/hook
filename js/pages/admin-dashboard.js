@@ -10,10 +10,15 @@ window.PageAdminDashboard = {
       window.DB.from('users').select('id', { count: 'exact', head: true }).neq('role', 'super_admin'),
       window.DB.from('sender_ids').select('id', { count: 'exact', head: true }).eq('statut', 'pending'),
       window.DB.from('campaigns').select('id,nom,statut,contacts_count,created_at').order('created_at', { ascending: false }).limit(5),
-      window.DB.from('sender_ids').select('id,name,représentant_legal,submitted_at').eq('statut', 'pending').order('submitted_at', { ascending: true }).limit(5),
-      window.DB.from('users').select('id,prenom,nom,email,organization_id,created_at').neq('role','super_admin').gte('created_at', new Date(Date.now()-7*24*60*60*1000).toISOString()).order('created_at', { ascending: false }).limit(10)
+      window.DB.from('sender_ids').select('id,name,representant_legal,submitted_at').eq('statut', 'pending').order('submitted_at', { ascending: true }).limit(5),
+      window.DB.from('users').select('id,prenom,nom,email,organization_id,created_at').neq('role','super_admin').gte('created_at', new Date(Date.now()-7*24*60*60*1000).toISOString()).order('created_at', { ascending: false }).limit(10),
+      window.DB.from('credit_transactions').select('type,montant_fcfa,statut').gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()),
+      window.DB.from('users').select('id', { count: 'exact', head: true }).eq('role', 'client').gte('last_login_at', new Date(Date.now()-7*24*60*60*1000).toISOString())
     ]).then(function(r) {
       var camps = r[2].data || [];
+      var revenue = (r[5].data || []).filter(function(t) {
+        return window.PageAdminBilling ? window.PageAdminBilling.isRevenue(t) : t.type === 'purchase';
+      }).reduce(function(a, t) { return a + (t.montant_fcfa || 0); }, 0);
       var totalSmsToday = 0;
       camps.forEach(function(c){ totalSmsToday += c.contacts_count || 0; });
 
@@ -23,7 +28,9 @@ window.PageAdminDashboard = {
         totalSmsToday:   totalSmsToday,
         recentCamps:     camps,
         pendingSidsList: r[3].data || [],
-        recentUsers:     r[4].data || []
+        recentUsers:     r[4].data || [],
+        revenueMonth:    r[5].error ? null : revenue,
+        seen7:           r[6].error ? null : (r[6].count || 0)
       });
     }).catch(function() { self._buildHtml({}); });
   },
@@ -51,10 +58,10 @@ window.PageAdminDashboard = {
       '<div class="admin-kpi-grid">' +
         this._kpi('Clients', clients.toLocaleString('fr-FR'), '', '', '#/Nkololopangohook/clients') +
         this._kpi('SMS envoyés total', smsToday.toLocaleString('fr-FR'), '', '', '#/Nkololopangohook/campagnes') +
-        this._kpi('Sender ID en attente', pendSids.toLocaleString('fr-FR'), pendSids > 0 ? 'A validér' : '', pendSids > 0 ? 'warn' : '', '#/Nkololopangohook/sender-id') +
+        this._kpi('Sender ID en attente', pendSids.toLocaleString('fr-FR'), pendSids > 0 ? 'À valider' : '', pendSids > 0 ? 'warn' : '', '#/Nkololopangohook/sender-id') +
         this._kpi('Campagnes récentes', recentCamps.length.toLocaleString('fr-FR'), '', '', '#/Nkololopangohook/campagnes') +
-        this._kpi('Revenus du mois', 'N/A', '', '', '#/Nkololopangohook/billing') +
-        this._kpi('Tickets support', 'N/A', '', '', '#/Nkololopangohook/support') +
+        this._kpi('Revenus du mois', d.revenueMonth == null ? '-' : Math.round(d.revenueMonth).toLocaleString('fr-FR') + ' FCFA', '', '', '#/Nkololopangohook/billing') +
+        this._kpi('Clients connectés (7j)', d.seen7 == null ? '-' : d.seen7.toLocaleString('fr-FR'), 'Voir le suivi d\'activité', 'up', '#/Nkololopangohook/activite') +
       '</div>' +
 
       '<div class="admin-grid-2">' +
@@ -113,7 +120,7 @@ window.PageAdminDashboard = {
       return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:0.5px solid rgba(11,56,40,0.08)">' +
         '<div>' +
           '<div style="font-size:14px;font-weight:700;letter-spacing:0.5px;color:var(--admin-text-primary)">' + window.Helpers.escapeHtml(s.name) + '</div>' +
-          '<div style="font-size:11px;color:var(--admin-text-secondary)">' + window.Helpers.escapeHtml(s.représentant_legal||'-') + ' · ' + hours + '</div>' +
+          '<div style="font-size:11px;color:var(--admin-text-secondary)">' + window.Helpers.escapeHtml(s.representant_legal||'-') + ' · ' + hours + '</div>' +
         '</div>' +
         '<button class="admin-btn-sm" onclick="window.Router.navigate(\'/Nkololopangohook/sender-id\')">Examiner</button>' +
       '</div>';

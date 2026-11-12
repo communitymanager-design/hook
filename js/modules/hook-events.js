@@ -18,7 +18,7 @@ window.HookEvents = {
       p_ressource_type: ressource_type,
       p_ressource_id:   ressource_id   || '00000000-0000-0000-0000-000000000000',
       p_target_user_id: target_user_id || null,
-      p_détails:        détails        || {}
+      p_details:        détails        || {}
     }).then(function(){}).catch(function(){});
   },
 

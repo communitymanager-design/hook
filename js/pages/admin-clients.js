@@ -216,7 +216,7 @@ window.PageAdminClients = {
             window.DB.from('users').update({ is_blocked: true }).eq('id', id).then(function(res) {
               if (res.error) { window.Toast.error(res.error.message); return; }
               window.HookEvents.log('user_blocked', 'user', id, id, { email: client.email });
-              window.HookEvents.notify(id, null, 'alerte', 'Compte bloqué', 'Votre compte a été bloqué. Veuillez contacter le service client pour régulariser votre situation.', null, {});
+              window.HookEvents.notify(id, 'alerte', 'Compte bloqué', 'Votre compte a été bloqué. Veuillez contacter le service client pour régulariser votre situation.', null, {});
               window.Helpers.closeModal();
               window.Toast.success('Compte bloqué');
               self._load();

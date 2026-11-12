@@ -135,7 +135,7 @@ window.PageSenderId = {
           '<div class="sid-détail-grid">' +
             '<div class="sid-détail-section"><div class="sid-section-title">Informations</div>' +
               '<table class="sid-info-table">' +
-                '<tr><td>Représentant</td><td>' + window.Helpers.escapeHtml(s.représentant_legal||'N/A') + '</td></tr>' +
+                '<tr><td>Représentant</td><td>' + window.Helpers.escapeHtml(s.representant_legal||'N/A') + '</td></tr>' +
                 '<tr><td>Email</td><td>' + window.Helpers.escapeHtml(s.email_contact||'N/A') + '</td></tr>' +
                 '<tr><td>Téléphone</td><td>' + window.Helpers.escapeHtml(s.telephone||'N/A') + '</td></tr>' +
                 '<tr><td>RCCM</td><td>' + window.Helpers.escapeHtml(s.rccm||'N/A') + '</td></tr>' +
@@ -185,7 +185,7 @@ window.PageSenderId = {
           '</div>' +
           '<div class="campnew-field"><label>Usage principal <span class="field-req">*</span></label><input type="text" id="sf-usage" placeholder="Ex: Rappels échéance et alertes clients" value="' + v('usage_principal') + '"></div>' +
           '<div class="sid-form-row">' +
-            '<div class="campnew-field"><label>Représentant legal <span class="field-req">*</span></label><input type="text" id="sf-rep" placeholder="Nom complet" value="' + v('représentant_legal') + '"></div>' +
+            '<div class="campnew-field"><label>Représentant legal <span class="field-req">*</span></label><input type="text" id="sf-rep" placeholder="Nom complet" value="' + v('representant_legal') + '"></div>' +
             '<div class="campnew-field"><label>Téléphone <span class="field-req">*</span></label><input type="tel" id="sf-tel" placeholder="+242 06 000 00 00" value="' + v('telephone') + '"></div>' +
           '</div>' +
           '<div class="sid-form-row">' +
@@ -279,7 +279,7 @@ window.PageSenderId = {
     var uid   = window.HookAuth.user && window.HookAuth.user.id;
     var data  = {
       name: nom, secteur: secteur, usage_principal: usage,
-      représentant_legal: rep, telephone: tel, rccm: rccm,
+      representant_legal: rep, telephone: tel, rccm: rccm,
       niu: val('sf-niu'), email_contact: email,
       statut: 'pending', activity_status: 'actif', organization_id: orgId
     };
