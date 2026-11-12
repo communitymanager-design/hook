@@ -41,8 +41,7 @@ window.PageAdminLogin = {
   },
 
   _loginForm: function() {
-    return '<div class="alog-title">Connexion administration</div>' +
-      '<div class="alog-sub">Accès réservé à l\'équipe Hook.</div>' +
+    return '<div class="alog-title" style="margin-bottom:20px">Connexion administrateur</div>' +
       '<div class="alog-error" id="alog-error"></div>' +
       '<label class="alog-label" for="alog-email">Email</label>' +
       '<input class="alog-input" type="email" id="alog-email" autocomplete="username" placeholder="prenom@lopango.io">' +
