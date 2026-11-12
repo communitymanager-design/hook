@@ -200,6 +200,11 @@ window.AdminUI = {
     }).then(function() {}, function() {});
   },
 
+  goClientSpace: function() {
+    if (window.HookAuth.isBackOffice && window.HookAuth.isBackOffice()) window.location.href = window.HOOK_CLIENT_URL + '/#/dashboard';
+    else window.Router.navigate('/dashboard');
+  },
+
   canManage: function() {
     return window.HookAuth && window.HookAuth.isSuperAdmin && window.HookAuth.isSuperAdmin();
   }

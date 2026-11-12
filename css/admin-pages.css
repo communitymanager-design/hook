@@ -80,3 +80,26 @@
   .admin-cols { gap:3px; }
   .admin-col-label { display:none; }
 }
+
+/* Connexion back-office (back.hookplateform.com) */
+.alog-page { min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px;background:#0B3828;background-image:radial-gradient(circle at 20% 15%, rgba(189,222,72,0.10), transparent 45%), radial-gradient(circle at 85% 90%, rgba(255,255,255,0.05), transparent 40%); }
+.alog-card { width:100%;max-width:400px;background:#fff;border-radius:16px;padding:36px 32px 28px;box-shadow:0 18px 50px rgba(0,0,0,0.25); }
+.alog-brand { display:flex;align-items:center;gap:12px;margin-bottom:28px; }
+.alog-icon { height:44px;width:auto;flex-shrink:0; }
+.alog-name { font-size:20px;font-weight:800;color:#0B3828;letter-spacing:-0.3px;line-height:1.1; }
+.alog-badge { display:inline-block;margin-top:4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;background:#BDDE48;color:#0B3828;padding:2px 8px;border-radius:10px; }
+.alog-title { font-size:18px;font-weight:700;color:#0B3828;margin-bottom:4px; }
+.alog-sub { font-size:13px;color:#4A6355;line-height:1.6;margin-bottom:20px; }
+.alog-label { display:block;font-size:12px;font-weight:600;color:#0B3828;margin-bottom:6px; }
+.alog-input { width:100%;border:1px solid rgba(11,56,40,0.15);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:#0B3828;background:#fff;outline:none;margin-bottom:14px;transition:border-color .15s ease, box-shadow .15s ease; }
+.alog-input:focus { border-color:#0B3828;box-shadow:0 0 0 3px rgba(189,222,72,0.35); }
+.alog-btn { width:100%;margin-top:4px;padding:12px;border:none;border-radius:10px;background:#0B3828;color:#fff;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;transition:background .15s ease; }
+.alog-btn:hover { background:#1A5C3C; }
+.alog-btn:disabled { opacity:.7;cursor:default; }
+.alog-link { margin-top:16px;text-align:center;font-size:12px;color:#1A5C3C;cursor:pointer;font-weight:500; }
+.alog-link:hover { color:#0B3828;text-decoration:underline; }
+.alog-error { display:none;background:#fcebeb;color:#a32d2d;font-size:12px;line-height:1.5;padding:10px 12px;border-radius:8px;margin-bottom:14px; }
+.alog-foot { font-size:12px;color:rgba(255,255,255,0.6); }
+.alog-foot a { color:#BDDE48;text-decoration:none;font-weight:600; }
+.alog-foot a:hover { text-decoration:underline; }
+@media (max-width:480px) { .alog-card { padding:28px 22px 22px; } }
